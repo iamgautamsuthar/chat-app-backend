@@ -18,6 +18,13 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
 app.use(cookieParser());
 
+//*  Routes import
+import userRouter from './routes/user.route.js';
+
+//* Routes
+app.use('/api/v1/register', userRouter);
+
+//* Global Error Handler
 app.use(errorHandler);
 
 export { app };

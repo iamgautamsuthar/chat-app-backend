@@ -1,6 +1,7 @@
 import { ApiError, ApiResponse, asyncHandler } from '../utils/index.js';
 import User from '../models/user.model.js';
 
+//* Register new user
 const registerUser = asyncHandler(async (req, res) => {
     const { username, password, name } = req.body;
 
@@ -28,3 +29,5 @@ const registerUser = asyncHandler(async (req, res) => {
 
     return res.status(200).json(new ApiResponse(200, newUser));
 });
+
+export { registerUser };
