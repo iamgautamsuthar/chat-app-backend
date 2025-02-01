@@ -2,8 +2,6 @@ import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import { errorHandler } from './middlewares/errorHandler.js';
-dotenv.config();
-
 const app = express();
 
 //* Middleware
@@ -22,7 +20,7 @@ app.use(cookieParser());
 import userRouter from './routes/user.route.js';
 
 //* Routes
-app.use('/api/v1/register', userRouter);
+app.use('/api/v1/user', userRouter);
 
 //* Global Error Handler
 app.use(errorHandler);

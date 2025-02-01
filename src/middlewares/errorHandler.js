@@ -1,14 +1,17 @@
-import { ApiError } from '../utils/ApiError.js';
+import { ApiError } from '../utils/index.js';
 
 const errorHandler = (err, req, res, next) => {
     if (err instanceof ApiError) {
-        res.status(err.statusCode).json({
+        return res.status(err.statusCode).json({
+            statusCode: err.statusCode,
             success: err.success,
             message: err.message,
             error: err.error || [],
         });
     } else {
-        res.status(500).json({
+        console.log(err);
+        return res.status(500).json({
+            statusCode: 500,
             success: false,
             message: 'Internal Server Error!',
             error: [],
