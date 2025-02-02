@@ -5,7 +5,6 @@ import {
     options,
 } from '../utils/index.js';
 import { User } from '../models/user.model.js';
-import { options } from '../utils/index.js';
 
 //* Register new user
 const registerUser = asyncHandler(async (req, res, next) => {
@@ -124,6 +123,8 @@ const changePassword = asyncHandler(async (req, res, next) => {
 
 //* Update user
 const updateUser = asyncHandler(async (req, res, next) => {
+    console.log('POST: /api/v1/user/update');
+
     const user = req.user;
     const { username, name } = req.body;
 

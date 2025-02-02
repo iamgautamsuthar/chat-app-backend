@@ -18,9 +18,11 @@ app.use(cookieParser());
 
 //*  Routes import
 import userRouter from './routes/user.route.js';
+import adminRouter from './routes/admin.route.js';
 
 //* Routes
 app.use('/api/v1/user', userRouter);
+app.use('/api/v1/admin', adminRouter);
 
 //* Global Error Handler
 app.use(errorHandler);
