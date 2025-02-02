@@ -93,6 +93,7 @@ const deleteUser = asyncHandler(async (req, res, next) => {
     return res.status(200).json(new ApiResponse(200, {}, 'User deleted'));
 });
 
+//* Change password
 const changePassword = asyncHandler(async (req, res, next) => {
     console.log('POST: /api/v1/user/change-password');
     const { oldPassword, newPassword } = req.body;
@@ -114,9 +115,49 @@ const changePassword = asyncHandler(async (req, res, next) => {
         return next(new ApiError(401, 'Incorrect password'));
     }
 
-    await User.findByIdAndUpdate(user._id, { password: newPassword });
+    user.password = newPassword;
+
+    await user.save({ validateBeforeSave: false });
 
     return res.status(200).json(new ApiResponse(200, {}, 'Password changed'));
 });
 
-export { registerUser, loginUser, logoutUser, deleteUser, changePassword };
+//* Update user
+const updateUser = asyncHandler(async (req, res, next) => {
+    const user = req.user;
+    const { username, name } = req.body;
+
+    if (!user) {
+        return next(new ApiError(404, 'User not found'));
+    }
+
+    if (!username || !name) {
+        return next(new ApiError(400, 'Please provide username, name'));
+    }
+
+    const newUser = await User.findByIdAndUpdate(
+        user._id,
+        {
+            username,
+            name,
+        },
+        { new: true }
+    );
+
+    if (!newUser) {
+        return next(
+            new ApiError(500, 'Something went wrong while updating user')
+        );
+    }
+
+    return res.status(200).json(new ApiResponse(200, newUser, 'User updated'));
+});
+
+export {
+    registerUser,
+    loginUser,
+    logoutUser,
+    deleteUser,
+    changePassword,
+    updateUser,
+};
