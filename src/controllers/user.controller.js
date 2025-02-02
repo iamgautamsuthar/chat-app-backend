@@ -80,7 +80,7 @@ const logoutUser = asyncHandler(async (_, res) => {
 });
 
 //* Delete user
-const deleteUser = asyncHandler(async (req, res) => {
+const deleteUser = asyncHandler(async (req, res, next) => {
     console.log('POST: /api/v1/user/deleteUser');
     const user = req.user;
 
@@ -93,4 +93,30 @@ const deleteUser = asyncHandler(async (req, res) => {
     return res.status(200).json(new ApiResponse(200, {}, 'User deleted'));
 });
 
-export { registerUser, loginUser, logoutUser, deleteUser };
+const changePassword = asyncHandler(async (req, res, next) => {
+    console.log('POST: /api/v1/user/change-password');
+    const { oldPassword, newPassword } = req.body;
+    const user = req.user;
+
+    if (!user) {
+        return next(new ApiError(404, 'User not found'));
+    }
+
+    if (!oldPassword || !newPassword) {
+        return next(
+            new ApiError(400, 'Please provide old password and new password')
+        );
+    }
+
+    const isPasswordCorrect = await user.isPasswordCorrect(oldPassword);
+
+    if (!isPasswordCorrect) {
+        return next(new ApiError(401, 'Incorrect password'));
+    }
+
+    await User.findByIdAndUpdate(user._id, { password: newPassword });
+
+    return res.status(200).json(new ApiResponse(200, {}, 'Password changed'));
+});
+
+export { registerUser, loginUser, logoutUser, deleteUser, changePassword };
