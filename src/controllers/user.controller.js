@@ -143,7 +143,7 @@ const updateUser = asyncHandler(async (req, res, next) => {
             name,
         },
         { new: true }
-    );
+    ).select('-password');
 
     if (!newUser) {
         return next(
