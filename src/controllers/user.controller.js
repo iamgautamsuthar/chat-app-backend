@@ -9,6 +9,7 @@ import { options } from '../utils/index.js';
 
 //* Register new user
 const registerUser = asyncHandler(async (req, res, next) => {
+    console.log('POST: /api/v1/user/register');
     const { username, password, name } = req.body;
 
     if (!username || !password || !name) {
@@ -38,6 +39,7 @@ const registerUser = asyncHandler(async (req, res, next) => {
 
 //* Login user
 const loginUser = asyncHandler(async (req, res, next) => {
+    console.log('POST: /api/v1/user/login');
     const { username, password } = req.body;
 
     if (!username || !password) {
@@ -70,6 +72,7 @@ const loginUser = asyncHandler(async (req, res, next) => {
 
 //* Logout user
 const logoutUser = asyncHandler(async (_, res) => {
+    console.log('POST: /api/v1/user/logout');
     return res
         .status(200)
         .clearCookie('accessToken', options)
