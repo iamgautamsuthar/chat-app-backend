@@ -79,4 +79,18 @@ const logoutUser = asyncHandler(async (_, res) => {
         .json(new ApiResponse(200, {}, 'User logged out successfully'));
 });
 
-export { registerUser, loginUser, logoutUser };
+//* Delete user
+const deleteUser = asyncHandler(async (req, res) => {
+    console.log('POST: /api/v1/user/deleteUser');
+    const user = req.user;
+
+    if (!user) {
+        return next(new ApiError(404, 'User not found'));
+    }
+
+    await User.findByIdAndDelete(user._id);
+
+    return res.status(200).json(new ApiResponse(200, {}, 'User deleted'));
+});
+
+export { registerUser, loginUser, logoutUser, deleteUser };
