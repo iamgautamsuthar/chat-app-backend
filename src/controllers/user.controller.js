@@ -70,8 +70,18 @@ const loginUser = asyncHandler(async (req, res, next) => {
 });
 
 //* Logout user
-const logoutUser = asyncHandler(async (_, res) => {
+const logoutUser = asyncHandler(async (req, res, next) => {
     console.log('POST: /api/v1/user/logout');
+
+    //check if user is logged in
+    if (!req.user) {
+        return next(new ApiError(401, 'Unauthorized - User not logged in'));
+    }
+
+    if (!req.cookies?.accessToken) {
+        return next(new ApiError(401, 'Unauthorized - No token provided'));
+    }
+
     return res
         .status(200)
         .clearCookie('accessToken', options)
@@ -89,13 +99,17 @@ const deleteUser = asyncHandler(async (req, res, next) => {
 
     await User.findByIdAndDelete(user._id);
 
-    return res.status(200).json(new ApiResponse(200, {}, 'User deleted'));
+    return res
+        .status(200)
+        .clearCookie('accessToken', options)
+        .json(new ApiResponse(200, {}, 'User deleted'));
 });
 
 //* Change password
 const changePassword = asyncHandler(async (req, res, next) => {
     console.log('POST: /api/v1/user/change-password');
     const { oldPassword, newPassword } = req.body;
+
     const user = req.user;
 
     if (!user) {
@@ -107,16 +121,17 @@ const changePassword = asyncHandler(async (req, res, next) => {
             new ApiError(400, 'Please provide old password and new password')
         );
     }
+    const newUser = await User.findById(user._id).select('+password');
 
-    const isPasswordCorrect = await user.isPasswordCorrect(oldPassword);
+    const isPasswordCorrect = await newUser.isPasswordCorrect(oldPassword);
 
     if (!isPasswordCorrect) {
         return next(new ApiError(401, 'Incorrect password'));
     }
 
-    user.password = newPassword;
+    newUser.password = newPassword;
 
-    await user.save({ validateBeforeSave: false });
+    await newUser.save({ validateBeforeSave: false });
 
     return res.status(200).json(new ApiResponse(200, {}, 'Password changed'));
 });
